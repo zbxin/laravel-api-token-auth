@@ -1,0 +1,27 @@
+{
+  "name": "zhieq/laravel-api-token-auth",
+  "description": "zhieq group api token auth",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "zhieq",
+      "email": "developer@zhieq.com"
+    }
+  ],
+  "require": {
+    "laravel/framework": "5.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "ZhiEq\\ApiTokenAuth\\": "src"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ZhiEq\\ApiTokenAuth\\ApiTokenServiceProvider"
+      ]
+    }
+  }
+}
