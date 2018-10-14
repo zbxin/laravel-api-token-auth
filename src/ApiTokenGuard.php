@@ -1,10 +1,10 @@
 <?php
 
-namespace App\ApiTokenAuth\Guard;
+namespace ZhiEq\ApiTokenAuth;
 
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
-use ZhiEq\ApiTokenAuth\Token;
+use ZhiEq\ApiTokenAuth\Facades\ApiToken;
 
 class ApiTokenGuard implements Guard
 {
@@ -26,7 +26,7 @@ class ApiTokenGuard implements Guard
     {
         $this->setProvider($provider);
         $tokenName = isset($config['token']) ? $config['token'] : null;
-        $this->apiToken = \ZhiEq\ApiTokenAuth\Facades\ApiToken::get($tokenName);
+        $this->apiToken = ApiToken::get($tokenName);
     }
 
 

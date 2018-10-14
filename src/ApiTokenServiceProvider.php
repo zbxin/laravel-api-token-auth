@@ -2,7 +2,6 @@
 
 namespace ZhiEq\ApiTokenAuth;
 
-use App\ApiTokenAuth\Guard\ApiTokenGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
