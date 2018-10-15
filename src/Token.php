@@ -32,8 +32,8 @@ class Token
         }
         $this->headerKey = $config['header'];
         $this->cacheKey = $config['cache'];
-        $this->expired = $config['expired'] ? $config['expired'] : 120;
-        $this->autoRefresh = $config['refresh'] ? $config['refresh'] : true;
+        $this->expired = isset($config['expired']) ? $config['expired'] : 120;
+        $this->autoRefresh = isset($config['refresh']) ? $config['refresh'] : true;
     }
 
     /**
