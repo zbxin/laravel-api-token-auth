@@ -2,117 +2,143 @@
 
 namespace ZhiEq\ApiTokenAuth;
 
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class Token
 {
-  protected $headerKey;
+    protected $headerKey;
 
-  protected $cacheKey;
+    protected $cacheKey;
 
-  protected $expired;
+    protected $expired;
 
-  protected $autoRefresh;
+    protected $autoRefresh;
 
-  private $_token;
+    protected $redisCon;
 
-  /**
-   * ApiToken constructor.
-   * @param $config
-   */
+    private $_token;
 
-  public function __construct($config)
-  {
-    if (!isset($config['cache']) || empty($config['cache'])) {
-      throw new \RuntimeException('config key "cache" can\'t empty.');
+    /**
+     * ApiToken constructor.
+     * @param $config
+     */
+
+    public function __construct($config)
+    {
+        if (!isset($config['cache']) || empty($config['cache'])) {
+            throw new \RuntimeException('config key "cache" can\'t empty.');
+        }
+        if (!isset($config['header']) || empty($config['header'])) {
+            throw new \RuntimeException('config header "cache" can\'t empty.');
+        }
+        $this->headerKey = $config['header'];
+        $this->cacheKey = $config['cache'];
+        $this->expired = isset($config['expired']) ? $config['expired'] : 120;
+        $this->autoRefresh = isset($config['refresh']) ? $config['refresh'] : true;
+        $this->redisCon = isset($config['redis']) ? $config['redis'] : 'cache';
     }
-    if (!isset($config['header']) || empty($config['header'])) {
-      throw new \RuntimeException('config header "cache" can\'t empty.');
+
+    /**
+     * @return array|string
+     */
+
+    public function getToken()
+    {
+        if ($this->_token === null) {
+            $this->_token = Request::instance()->header($this->headerKey);
+        }
+        return $this->_token;
     }
-    $this->headerKey = $config['header'];
-    $this->cacheKey = $config['cache'];
-    $this->expired = isset($config['expired']) ? $config['expired'] : 120;
-    $this->autoRefresh = isset($config['refresh']) ? $config['refresh'] : true;
-  }
 
-  /**
-   * @return array|string
-   */
+    /**
+     * @return null
+     */
 
-  public function getToken()
-  {
-    if ($this->_token === null) {
-      $this->_token = Request::instance()->header($this->headerKey);
+    protected function getCode()
+    {
+        try {
+            $cacheCode = Redis::connection($this->redisCon)->get($this->redisCacheKey());
+            return empty($cacheCode) ? null : unserialize($cacheCode);
+        } catch (\Exception $exception) {
+            return null;
+        }
     }
-    return $this->_token;
-  }
 
-  /**
-   * @return null
-   */
+    /**
+     * @return null
+     */
 
-  protected function getCode()
-  {
-    try {
-      return cache()->tags($this->cacheKey)->get($this->getToken());
-    } catch (\Exception $exception) {
-      return null;
+    public function getUserCode()
+    {
+        try {
+            $userCode = $this->getCode();
+            $this->autoRefresh === true && $userCode !== null && $this->cacheUserCode($userCode);
+            return $userCode;
+        } catch (\Exception $exception) {
+            logs()->error($exception);
+            return null;
+        }
     }
-  }
 
-  /**
-   * @return null
-   */
+    /**
+     *
+     */
 
-  public function getUserCode()
-  {
-    try {
-      $userCode = $this->getCode();
-      if ($this->autoRefresh === true && $userCode !== null) {
-        cache()->tags($this->cacheKey)->put($this->getToken(), $userCode, Carbon::now()->addMinutes($this->expired));
-      }
-      return $userCode;
-    } catch (\Exception $exception) {
-      logs()->error($exception);
-      return null;
+    public function clearUserCode()
+    {
+        try {
+            $this->getCode() && Redis::connection($this->redisCon)->forget($this->redisCacheKey());
+        } catch (\Exception $exception) {
+            logs()->error($exception);
+        }
     }
-  }
 
-  /**
-   *
-   */
+    /**
+     *
+     */
 
-  public function clearUserCode()
-  {
-    try {
-      $this->getCode() && cache()->tags($this->cacheKey)->forget($this->getToken());
-    } catch (\Exception $exception) {
-      logs()->error($exception);
+    protected function generateToken()
+    {
+        $this->_token = Str::random(40);
+        return $this;
     }
-  }
 
-  /**
-   *
-   */
+    /**
+     * @param $userCode
+     */
 
-  protected function generateToken()
-  {
-    $this->_token = Str::random(40);
-  }
-
-  /**
-   * @param $userCode
-   */
-
-  public function setUserCode($userCode)
-  {
-    try {
-      $this->generateToken();
-      cache()->tags($this->cacheKey)->add($this->getToken(), $userCode, $this->expired);
-    } catch (\Exception $exception) {
-      logs()->error($exception);
+    public function setUserCode($userCode)
+    {
+        try {
+            $this->generateToken()->cacheUserCode($userCode);
+        } catch (\Exception $exception) {
+            logs()->error($exception);
+        }
     }
-  }
+
+    /**
+     * @param $userCode
+     * @return bool
+     */
+
+    protected function cacheUserCode($userCode)
+    {
+        try {
+            Redis::connection($this->redisCon)->set($this->redisCacheKey(), serialize($userCode), 'EX', $this->expired * 60);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @return string
+     */
+
+    protected function redisCacheKey()
+    {
+        return config('cache.prefix') . ':' . $this->cacheKey . $this->getToken();
+    }
 }
