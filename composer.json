@@ -1,12 +1,12 @@
 {
-  "name": "zhieq/laravel-api-token-auth",
-  "description": "zhieq group api token auth",
+  "name": "zbxin/laravel-api-token-auth",
+  "description": "laravel api token auth",
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "zhieq",
-      "email": "developer@zhieq.com"
+      "name": "zbxin",
+      "email": ""
     }
   ],
   "require": {
@@ -14,13 +14,13 @@
   },
   "autoload": {
     "psr-4": {
-      "ZhiEq\\ApiTokenAuth\\": "src"
+      "zbxin\\ApiTokenAuth\\": "src"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "ZhiEq\\ApiTokenAuth\\ApiTokenServiceProvider"
+        "zbxin\\ApiTokenAuth\\ApiTokenServiceProvider"
       ]
     }
   }
