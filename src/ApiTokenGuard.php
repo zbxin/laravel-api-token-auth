@@ -1,10 +1,10 @@
 <?php
 
-namespace ZhiEq\ApiTokenAuth;
+namespace Zbxin\ApiTokenAuth;
 
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
-use ZhiEq\ApiTokenAuth\Facades\ApiToken;
+use Zbxin\ApiTokenAuth\Facades\ApiToken;
 
 class ApiTokenGuard implements Guard
 {

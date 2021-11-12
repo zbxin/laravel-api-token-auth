@@ -14,13 +14,13 @@
   },
   "autoload": {
     "psr-4": {
-      "zbxin\\ApiTokenAuth\\": "src/"
+      "Zbxin\\bxin\\ApiTokenAuth\\": "src/"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "zbxin\\ApiTokenAuth\\ApiTokenServiceProvider"
+        "Zbxin\\ApiTokenAuth\\ApiTokenServiceProvider"
       ]
     }
   }

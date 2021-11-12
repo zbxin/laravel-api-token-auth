@@ -1,6 +1,6 @@
 <?php
 
-namespace ZhiEq\ApiTokenAuth;
+namespace Zbxin\ApiTokenAuth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;

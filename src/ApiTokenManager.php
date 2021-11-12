@@ -1,6 +1,6 @@
 <?php
 
-namespace ZhiEq\ApiTokenAuth;
+namespace Zbxin\ApiTokenAuth;
 
 class ApiTokenManager
 {

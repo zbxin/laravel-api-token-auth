@@ -1,6 +1,6 @@
 <?php
 
-namespace ZhiEq\ApiTokenAuth;
+namespace Zbxin\ApiTokenAuth;
 
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Request;

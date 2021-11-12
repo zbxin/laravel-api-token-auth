@@ -1,10 +1,10 @@
 <?php
 
-namespace ZhiEq\ApiTokenAuth\Facades;
+namespace Zbxin\ApiTokenAuth\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use ZhiEq\ApiTokenAuth\ApiTokenManager;
-use ZhiEq\ApiTokenAuth\Token;
+use Zbxin\ApiTokenAuth\ApiTokenManager;
+use Zbxin\ApiTokenAuth\Token;
 
 /**
  * @method static Token|null get($token = null)
