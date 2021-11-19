@@ -90,7 +90,8 @@ class Token
     public function clearUserCode()
     {
         try {
-            $this->getCode() && Redis::connection($this->redisCon)->forget($this->redisCacheKey());
+            //$this->getCode() && Redis::connection($this->redisCon)->forget($this->redisCacheKey());
+            $this->getCode() && Redis::connection($this->redisCon)->command('del', [$this->redisCacheKey()]);
         } catch (\Exception $exception) {
             logs()->error($exception);
         }
